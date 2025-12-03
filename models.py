@@ -1,6 +1,16 @@
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column,Text,Integer,DateTime,ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import Column,Text,Integer,DateTime,ForeignKey,create_engine
 from datetime import datetime
+
+engine = create_engine("sqlite:///elegant.db", echo=True)   #converts sql to python and vice versa
+Session = sessionmaker(bind=engine)  #allows interface with the database
+
+def get_db():
+    session = Session()
+    try:
+        yield session
+    finally:
+        session.close()
 
 
 Base = declarative_base()
@@ -27,7 +37,7 @@ class Brand(Base):
 
 
 class Occasion (Base):
-    
+
     __tablename__ = "occasions"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -45,7 +55,7 @@ class Outfit(Base):
     brand_id = Column(Integer, ForeignKey("brands.id"))
     occasion_id = Column(Integer, ForeignKey("occasions.id"))
 
-    title = Column(Text, nullable=False)
+    name = Column(Text, nullable=False)
     description = Column(Text)
     color = Column(Text)
     image_url = Column(Text)
